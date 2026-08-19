@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gulp! A Balloon Hangman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Patrick+Hand&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+<div class="bg-decor" id="bgDecor" aria-hidden="true"></div>
+
+<div class="card" id="cardEl">
+  <audio id="menuMusic" loop autoplay preload="auto" src="assets/audio/menu-music.mp3" loop autoplay preload="auto"></audio>
+  <audio id="loseMusic" loop preload="auto" src="assets/audio/Heartbroken Yandere simulator theme.mp3"></audio>
+  <div class="topbar">
+    <button class="icon-btn" id="homeBtn" title="Back to menu" aria-label="Home">
+      <svg width="26" height="24" viewBox="0 0 26 24" fill="none" stroke="#1c1c1c" stroke-width="2.4" stroke-linejoin="round"><path d="M2 11 L13 2 L24 11"/><path d="M5 9.5 V22 H21 V9.5"/><path d="M10.5 22 V15 H15.5 V22"/></svg>
+    </button>
+    <button class="icon-btn" id="musicToggleBtn" title="Toggle menu music" aria-label="Toggle menu music">
+      <svg id="musicIconOn" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      <svg id="musicIconOff" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1c1c1c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/><line x1="3" y1="3" x2="21" y2="21" stroke="#d43d3d"/></svg>
+    </button>
+    <div class="counters">
+      <div class="row"><span class="balloon-ic">🎈</span><span>SAVED: <b id="savedVal">0</b></span></div>
+      <div class="row"><span>🏆</span><span>BEST: <b id="bestVal">0</b></span></div>
+      <div class="row"><span>🔥</span><span>STREAK: <b id="streakVal">0</b></span></div>
+      <div class="row"><span>⭐</span><span>BEST STREAK: <b id="bestStreakVal">0</b></span></div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <section class="screen active" id="screen-setup">
+    <div class="hero" aria-hidden="true">
+      <svg viewBox="0 0 200 130" xmlns="http://www.w3.org/2000/svg">
+        <!-- sun -->
+        <g class="hero-sun">
+          <circle cx="16" cy="16" r="8" fill="#f0b72f"/>
+          <g stroke="#f0b72f" stroke-width="1.6" stroke-linecap="round">
+            <line x1="16" y1="1" x2="16" y2="4"/>
+            <line x1="16" y1="28" x2="16" y2="31"/>
+            <line x1="1" y1="16" x2="4" y2="16"/>
+            <line x1="28" y1="16" x2="31" y2="16"/>
+            <line x1="5.5" y1="5.5" x2="7.7" y2="7.7"/>
+            <line x1="24.3" y1="24.3" x2="26.5" y2="26.5"/>
+            <line x1="5.5" y1="26.5" x2="7.7" y2="24.3"/>
+            <line x1="24.3" y1="7.7" x2="26.5" y2="5.5"/>
+          </g>
+        </g>
+        <!-- sparkles -->
+        <path class="hero-sparkle s1" d="M182 26 l2.2 5.6 l5.6 2.2 l-5.6 2.2 l-2.2 5.6 l-2.2 -5.6 l-5.6 -2.2 l5.6 -2.2 Z" fill="#c98a1f"/>
+        <path class="hero-sparkle s2" d="M22 46 l1.6 4 l4 1.6 l-4 1.6 l-1.6 4 l-1.6 -4 l-4 -1.6 l4 -1.6 Z" fill="#3f8fd4"/>
+        <path class="hero-sparkle s3" d="M172 70 l1.4 3.6 l3.6 1.4 l-3.6 1.4 l-1.4 3.6 l-1.4 -3.6 l-3.6 -1.4 l3.6 -1.4 Z" fill="#d9508f"/>
+        <g class="hero-monster">
+          <polygon points="76,96 66,80 84,86" fill="#1c1c1c"/>
+          <polygon points="124,96 134,80 116,86" fill="#1c1c1c"/>
+          <path d="M52 122 Q48 88 76 84 Q84 76 100 76 Q116 76 124 84 Q152 88 148 122 Z" fill="#1c1c1c"/>
+          <ellipse cx="86" cy="102" rx="8" ry="9" fill="#fff"/>
+          <ellipse cx="114" cy="102" rx="8" ry="9" fill="#fff"/>
+          <circle cx="88" cy="104" r="3.2" fill="#1c1c1c"/>
+          <circle cx="112" cy="104" r="3.2" fill="#1c1c1c"/>
+          <ellipse cx="100" cy="118" rx="16" ry="9" fill="#4a1010"/>
+          <polygon points="88,113 96,113 92,120" fill="#fff"/>
+          <polygon points="96,113 104,113 100,120" fill="#fff"/>
+          <polygon points="104,113 112,113 108,120" fill="#fff"/>
+        </g>
+        <line x1="72" y1="46" x2="60" y2="18" stroke="#1c1c1c" stroke-width="1.6"/>
+        <line x1="100" y1="40" x2="100" y2="10" stroke="#1c1c1c" stroke-width="1.6"/>
+        <line x1="128" y1="46" x2="140" y2="18" stroke="#1c1c1c" stroke-width="1.6"/>
+        <g class="hero-balloon b1"><ellipse cx="60" cy="14" rx="13" ry="16" fill="#e08b2e"/><ellipse cx="55.5" cy="8" rx="3" ry="4" fill="#fff" opacity=".6"/></g>
+        <g class="hero-balloon b2"><ellipse cx="100" cy="8" rx="14" ry="17" fill="#d43d3d"/><ellipse cx="95" cy="2" rx="3.2" ry="4.3" fill="#fff" opacity=".6"/></g>
+        <g class="hero-balloon b3"><ellipse cx="140" cy="14" rx="13" ry="16" fill="#3f8fd4"/><ellipse cx="135.5" cy="8" rx="3" ry="4" fill="#fff" opacity=".6"/></g>
+        <!-- ground + grass -->
+        <path d="M18 123 Q100 130 182 123" stroke="#1c1c1c" stroke-width="1.4" fill="none" opacity="0.22"/>
+        <g stroke="#2f9e5c" stroke-width="2" stroke-linecap="round" opacity="0.4">
+          <path d="M28 123 l-3 -7 M31.5 123 l0 -8.5 M35 123 l3 -7" fill="none"/>
+          <path d="M162 123 l-3 -7 M165.5 123 l0 -8.5 M169 123 l3 -7" fill="none"/>
+        </g>
+      </svg>
+    </div>
+
+    <h1 class="title">Gulp!</h1>
+    <p class="subtitle">Guess the word one letter at a time before your balloons run out — or the monster gets a snack. Pick a category and a difficulty to begin.</p>
+
+    <p class="section-label"><span class="lbl-star">✦</span> Choose a category <span class="lbl-star">✦</span></p>
+    <div class="cat-grid" id="catGrid"></div>
+
+    <p class="section-label"><span class="lbl-star">✦</span> Choose a difficulty <span class="lbl-star">✦</span></p>
+    <div class="diff-row" id="diffRow">
+      <button class="diff-btn" data-level="easy"><span class="lvl-icon">🪶</span><span class="lvl">Easy</span><span class="desc">8 balloons · short words</span></button>
+      <button class="diff-btn" data-level="medium"><span class="lvl-icon">⚡</span><span class="lvl">Medium</span><span class="desc">6 balloons · longer words</span></button>
+      <button class="diff-btn" data-level="hard"><span class="lvl-icon">💀</span><span class="lvl">Hard</span><span class="desc">4 balloons · tricky words</span></button>
+    </div>
+
+    <div class="start-row">
+      <button class="btn" id="startBtn" disabled>Start game</button>
+      <span class="hint-note" id="startHint">Choose a category and difficulty to continue</span>
+    </div>
+    <div class="corner-doodle tl"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M10 4 L13 12 L21 15 L13 18 L10 26 L7 18 L-1 15 L7 12 Z" fill="#c98a1f" transform="translate(2,2)"/><circle cx="30" cy="8" r="2.4" fill="#3f8fd4"/><circle cx="34" cy="16" r="1.6" fill="#d43d3d"/></svg></div>
+    <div class="corner-doodle tr"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M6 30 Q4 14 20 10 Q28 8 32 14" stroke="#2f9e5c" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="1 6"/><path d="M27 10 L33 14 L26 17" stroke="#2f9e5c" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="corner-doodle bl"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><ellipse cx="14" cy="10" rx="9" ry="11" fill="#d9508f" opacity="0.85"/><line x1="14" y1="21" x2="14" y2="34" stroke="#33261f" stroke-width="1.2"/><circle cx="30" cy="30" r="2" fill="#c98a1f"/><circle cx="24" cy="34" r="1.3" fill="#3f8fd4"/></svg></div>
+    <div class="corner-doodle br"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M4 20 Q20 4 36 20" stroke="#d43d3d" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="1 6"/><path d="M4 26 Q20 12 36 26" stroke="#8264d8" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="1 6"/></svg></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="screen-game">
+    <div class="category-label" id="catLabel">Category</div>
+    <div class="lives-row" id="livesRow"></div>
+    <div class="word-display" id="wordDisplay"></div>
+    <div class="clue-row">clue: <span id="clueText">—</span></div>
+    <div class="tier1-clue" id="tier1ClueText"></div>
+    <div class="hint-tier-row" id="hintTierRow">
+      <button type="button" id="hintTier1" class="hint-btn">💡 Extra clue <b>free</b></button>
+      <button type="button" id="hintTier2" class="hint-btn">🔀 50/50 <b>−1</b></button>
+    </div>
+    <div class="streak-row" id="streakRow"></div>
+
+    <div class="game-grid">
+      <div class="alpha-grid" id="keyboard"></div>
+
+      <div class="scene-wrap">
+        <div class="scene">
+          <div class="flash" id="flash"></div>
+          <svg viewBox="0 0 240 340" xmlns="http://www.w3.org/2000/svg">
+            <defs id="svgDefs"></defs>
+
+            <!-- ambient fog shapes -->
+            <ellipse cx="60" cy="230" rx="70" ry="140" fill="#000" opacity="0.05"/>
+            <ellipse cx="190" cy="260" rx="60" ry="120" fill="#000" opacity="0.05"/>
+            <ellipse cx="120" cy="200" rx="90" ry="150" fill="#000" opacity="0.04"/>
+
+            <!-- soft ambient glow -->
+            <ellipse cx="120" cy="24" rx="150" ry="95" fill="url(#sceneGlow)"/>
+
+            <!-- drifting clouds -->
+            <g class="cloud cloud1" opacity="0.55">
+              <ellipse cx="42" cy="34" rx="26" ry="10" fill="#ffffff"/>
+              <ellipse cx="62" cy="29" rx="18" ry="8" fill="#ffffff"/>
+            </g>
+            <g class="cloud cloud2" opacity="0.4">
+              <ellipse cx="192" cy="52" rx="22" ry="9" fill="#ffffff"/>
+              <ellipse cx="176" cy="47" rx="14" ry="7" fill="#ffffff"/>
+            </g>
+
+            <!-- ground shadow -->
+            <ellipse cx="120" cy="331" rx="72" ry="8" fill="#000" opacity="0.13"/>
+
+            <!-- monster -->
+            <g id="monsterGroup">
+              <g id="monsterBreath">
+                <polygon points="90,255 78,235 100,242" fill="url(#monsterGrad)"/>
+                <polygon points="150,255 162,235 140,242" fill="url(#monsterGrad)"/>
+                <path d="M60 300
+                         Q55 250 90 245
+                         Q100 235 120 235
+                         Q140 235 150 245
+                         Q185 250 180 300
+                         Q185 320 165 328
+                         Q150 336 120 336
+                         Q90 336 75 328
+                         Q55 320 60 300 Z" fill="url(#monsterGrad)"/>
+                <path d="M96 258 Q102 251 110 253" stroke="#1c1c1c" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <path d="M144 258 Q138 251 130 253" stroke="#1c1c1c" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <ellipse cx="102" cy="278" rx="10" ry="12" fill="#fff"/>
+                <ellipse cx="138" cy="278" rx="10" ry="12" fill="#fff"/>
+                <circle cx="104" cy="281" r="4" fill="#1c1c1c"/>
+                <circle cx="136" cy="281" r="4" fill="#1c1c1c"/>
+                <ellipse cx="120" cy="303" rx="26" ry="17" fill="#4a1010"/>
+                <polygon points="96,289 106,289 101.0,300" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+                <polygon points="106,289 116,289 111.0,300" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+                <polygon points="116,289 126,289 121.0,300" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+                <polygon points="126,289 136,289 131.0,300" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+                <polygon points="136,289 144,289 140.0,300" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+              </g>
+            </g>
+
+            <!-- figure + balloons : native inline SVG (no raster assets) -->
+            <g id="figureGroup" style="transform: translateY(0px);">
+              <g id="figureSway">
+                <g id="headBalloons"></g>
+                <g id="figureLive">
+                  <image id="figureImg" href="assets/images/player-happy.png" x="86" y="91" width="68" height="103" preserveAspectRatio="xMidYMid meet"/>
+                </g>
+              </g>
+            </g>
+
+            <!-- front teeth overlay: sits above the descending figure to sell the "swallowed" effect -->
+            <g id="frontTeeth">
+              <polygon points="96,317 106,317 101.0,306" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+              <polygon points="106,317 116,317 111.0,306" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+              <polygon points="116,317 126,317 121.0,306" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+              <polygon points="126,317 136,317 131.0,306" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+              <polygon points="136,317 144,317 140.0,306" fill="#ffffff" stroke="#1c1c1c" stroke-width="1"/>
+            </g>
+          </svg>
+        </div>
+        <div class="msg-row" id="msgRow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- END -->
+  <section class="screen" id="screen-end">
+    <div class="corner-doodle tl"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M10 4 L13 12 L21 15 L13 18 L10 26 L7 18 L-1 15 L7 12 Z" fill="#c98a1f" transform="translate(2,2)"/><circle cx="30" cy="8" r="2.4" fill="#3f8fd4"/></svg></div>
+    <div class="corner-doodle tr"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><ellipse cx="14" cy="10" rx="9" ry="11" fill="#3f9e6d" opacity="0.85"/><line x1="14" y1="21" x2="14" y2="34" stroke="#33261f" stroke-width="1.2"/><circle cx="30" cy="30" r="2" fill="#d43d3d"/></svg></div>
+    <div class="corner-doodle bl"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M4 20 Q20 4 36 20" stroke="#d43d3d" stroke-width="2" fill="none" stroke-linecap="round" stroke-dasharray="1 6"/></svg></div>
+    <div class="corner-doodle br"><svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg"><path d="M10 4 L13 12 L21 15 L13 18 L10 26 L7 18 L-1 15 L7 12 Z" fill="#8264d8" transform="translate(2,2)"/><circle cx="30" cy="10" r="1.8" fill="#e3b93a"/></svg></div>
+    <div class="end-wrap">
+      <div class="end-glyph" id="endGlyph">🎈</div>
+      <h2 class="end-title" id="endTitle">Game over</h2>
+      <p class="end-sub" id="endSub">Here's how it went.</p>
+      <div class="end-stats">
+        <div class="stat"><div class="num" id="statSaved">0</div><div class="lbl">saved</div></div>
+        <div class="stat"><div class="num" id="statBest">0</div><div class="lbl">best</div></div>
+        <div class="stat"><div class="num" id="statStreak">0</div><div class="lbl">best streak</div></div>
+      </div>
+      <p class="end-sub" id="endWord" style="margin-top:-14px;"></p>
+      <div class="end-actions">
+        <button class="btn" id="playAgainBtn">Play again</button>
+        <button class="btn ghost" id="menuBtn">Change setup</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="js/game.js"></script>
+
+</body>
+</html>
